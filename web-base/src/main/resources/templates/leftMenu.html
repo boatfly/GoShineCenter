@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/css/web-base.css">
+</head>
+<body>
+welcome,<span th:text="${iscuser.userName}"></span>!<a href="logout" target="_parent">退出</a>
+<br><br>
+
+<table class="table table-hover table-condensed">
+    <thead>
+    <tr>
+        <th>来自ISC的用户菜单：</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="menu : ${menuList}">
+        <th scope="row" th:text="${menu.menuName}"></th>
+    </tr>
+    </tbody>
+</table>
+<br><br>
+<table class="table table-hover table-condensed">
+    <thead>
+    <tr>
+        <th>测试菜单：</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <th scope="row"><a href="deviceMysql" target="main">设备管理（mysql）</a></th>
+        <th scope="row"><a href="deviceHbase" target="main">设备管理（hbase）</a></th>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

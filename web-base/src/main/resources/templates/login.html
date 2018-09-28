@@ -1,0 +1,22 @@
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>系统登录</title>
+    <link rel="stylesheet" href="../static/css/web-base.css">
+</head>
+<body>
+<form method="post" id="loginform" action = "/login">
+    <br/><br/>
+    <div class="item" align="center">
+        <label>用户名：</label><input type="text" name="username" id="username" class="txt">
+    </div>
+    <div class="item" align="center">
+        <label>密 &nbsp; 码：</label><input type="password" name="password" id="password" class="txt">
+    </div>
+    <div class="item item-control" align="center">
+        <input type="submit" value="登录" class="buttonground" onclick="submitForm()" style="width: 60px;height: 25px">
+        <input type="reset" value="重置" class="buttonground" style="width: 60px;height: 25px">
+    </div>
+</form>
+</body>
+</html>

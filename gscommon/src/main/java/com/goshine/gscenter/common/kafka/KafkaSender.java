@@ -40,33 +40,33 @@ public class KafkaSender {
     @PostConstruct
     void initd(){
 
-//        ConsumerGroup consumerThread = new ConsumerGroup("group-1","gscenter_fi_devicestatus_records",consumerConfig);
-//        ConsumerGroup consumerThread2 = new ConsumerGroup("group-2","gscenter_fi_devicestatus_records", consumerConfig);
-//
-//        consumerPool = new ThreadGeneralPool(threadPoolConfig.coreSize,threadPoolConfig.maximumPoolSize,threadPoolConfig.keepAliveTime,"kafka-consumer-thread");
-//
-//        ThreadPoolMarshall threadPoolMarshall = ThreadPoolMarshall.getInstance();
-//        threadPoolMarshall.getPoolmap().put("kafka-consumer-pool",consumerPool);
-//
-//        /**
-//         * 启动消费者
-//         */
-//        consumerPool.SubmitConsumerPool(new Consumer(consumerThread,messageMapper));
-//        consumerPool.SubmitConsumerPool(new Consumer(consumerThread,messageMapper));
-//
-//        consumerPool.SubmitConsumerPool(new HbaseConsumer(consumerThread2,hMessageService));
+        ConsumerGroup consumerThread = new ConsumerGroup("group-1","gscenter_fi_devicestatus_records",consumerConfig);
+        ConsumerGroup consumerThread2 = new ConsumerGroup("group-2","gscenter_fi_devicestatus_records", consumerConfig);
+
+        consumerPool = new ThreadGeneralPool(threadPoolConfig.coreSize,threadPoolConfig.maximumPoolSize,threadPoolConfig.keepAliveTime,"kafka-consumer-thread");
+
+        ThreadPoolMarshall threadPoolMarshall = ThreadPoolMarshall.getInstance();
+        threadPoolMarshall.getPoolmap().put("kafka-consumer-pool",consumerPool);
+
+        /**
+         * 启动消费者
+         */
+        consumerPool.SubmitConsumerPool(new Consumer(consumerThread,messageMapper));
+        consumerPool.SubmitConsumerPool(new Consumer(consumerThread,messageMapper));
+
+        consumerPool.SubmitConsumerPool(new HbaseConsumer(consumerThread2,hMessageService));
     }
 
     //发送消息方法
     public void send() {
-//        for (int i=0;i<10;i++){
-//            Message message = new Message();
-//            message.setId(System.currentTimeMillis());
-//            message.setMsg(UUID.randomUUID().toString());
-//            message.setSendTime(new Date());
-//            LOGGER.info("+++++++++++++++++++++  message = {}", JsonMapper.INSTANCE.toJson(message));
-//            kafkaTemplate.send("gscenter_fi_devicestatus_records", JsonMapper.INSTANCE.toJson(message));
-//        }
+        for (int i=0;i<10;i++){
+            Message message = new Message();
+            message.setId(System.currentTimeMillis());
+            message.setMsg(UUID.randomUUID().toString());
+            message.setSendTime(new Date());
+            LOGGER.info("+++++++++++++++++++++  message = {}", JsonMapper.INSTANCE.toJson(message));
+            kafkaTemplate.send("gscenter_fi_devicestatus_records", JsonMapper.INSTANCE.toJson(message));
+        }
     }
 
     @PreDestroy

@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/css/web-base.css">
+    <style type="text/css">
+        table{border-collapse: collapse; margin-top:6px; width:100%; text-align: left;left;}
+        table td, table th{border: 1px solid #cad9ea;color: #666;height: 30px;padding:6px;}
+        table thead th{background-color: #CCE8EB;width: 100px;}
+        table tr:nth-child(odd){background: #fff;}
+        table tr:nth-child(even){background: #F5FAFA;}
+    </style>
+</head>
+<body>
+<span>位置 > 服务投诉 > 服务投诉内容</span>
+<table>
+
+    <tbody>
+    <tr><th>属性</th><th>属性内容</th></tr>
+    <tr>
+        <th scope="row">ID：</th><th scope="row" th:text="${hMessage.id}"></th>
+    </tr>
+    <tr>
+        <th scope="row">msg</th><th scope="row" th:text="${hMessage.msg}"></th>
+    </tr>
+    <tr>
+        <th scope="row">sendTime</th><th scope="row" th:text="${hMessage.sendTime}"></th>
+    </tr>
+    </tbody>
+</table>
+<br>
+<a href="javascript:history.go(-1)">返回</a>
+<br><br>
+</body>
+</html>

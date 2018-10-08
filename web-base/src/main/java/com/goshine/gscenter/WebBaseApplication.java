@@ -43,9 +43,9 @@ public class WebBaseApplication {
 		 return pageHelper;
 	}
 
-	@Scheduled(fixedDelay = 2000)
+	@Scheduled(fixedDelay = 20000)
 	public void testKafka() throws Exception {
 		LOGGER.info(".....initial kafka sender.");
-		kafkaSender.send();
+		//kafkaSender.send();
 	}
 }

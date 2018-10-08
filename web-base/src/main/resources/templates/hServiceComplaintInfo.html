@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/css/web-base.css">
+    <style type="text/css">
+        table{border-collapse: collapse; margin-top:6px; width:100%; text-align: left;left;}
+        table td, table th{border: 1px solid #cad9ea;color: #666;height: 30px;padding:6px;}
+        table thead th{background-color: #CCE8EB;width: 100px;}
+        table tr:nth-child(odd){background: #fff;}
+        table tr:nth-child(even){background: #F5FAFA;}
+    </style>
+</head>
+<body>
+<span>位置 > 服务投诉 > 服务投诉内容</span>
+<table>
+
+    <tbody>
+    <tr><th width="100px">属性</th><th>属性内容</th></tr>
+    <tr>
+        <th scope="row">rowkey：</th><th scope="row" th:text="${hMessage.id}"></th>
+    </tr>
+    <tr>
+        <th scope="row">受理内容：</th><th scope="row" th:text="${hMessage.content}"></th>
+    </tr>
+    <tr>
+        <th scope="row">受理时间：</th><th scope="row" th:text="${hMessage.clsj}"></th>
+    </tr>
+    <tr>
+        <th scope="row">单号；</th><th scope="row" th:text="${hMessage.gdh}"></th>
+    </tr>
+    <tr>
+        <th scope="row">国网工单号：</th><th scope="row" th:text="${hMessage.gwgdh}"></th>
+    </tr>
+    <tr>
+        <th scope="row">受理人员：</th><th scope="row" th:text="${hMessage.slry}"></th>
+    </tr>
+    <tr>
+        <th scope="row">处理人工号：</th><th scope="row" th:text="${hMessage.slrgh}"></th>
+    </tr>
+    <tr>
+        <th scope="row">处理部门：</th><th scope="row" th:text="${hMessage.clbm}"></th>
+    </tr>
+    <tr>
+        <th scope="row">处理时间：</th><th scope="row" th:text="${hMessage.clsj}"></th>
+    </tr>
+    <tr>
+        <th scope="row">用户编号：</th><th scope="row" th:text="${hMessage.yhbh}"></th>
+    </tr>
+    <tr>
+        <th scope="row">用户名称：</th><th scope="row" th:text="${hMessage.yhmc}"></th>
+    </tr>
+    <tr>
+        <th scope="row">联系地址：</th><th scope="row" th:text="${hMessage.lxdz}"></th>
+    </tr>
+    <tr>
+        <th scope="row">诉求类别：</th><th scope="row" th:text="${hMessage.sqlb}"></th>
+    </tr>
+    <tr>
+        <th scope="row">所属单位：</th><th scope="row" th:text="${hMessage.ssdw}"></th>
+    </tr>
+    </tbody>
+</table>
+<br>
+<a href="javascript:history.go(-1)">返回</a>
+<br><br>
+</body>
+</html>

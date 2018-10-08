@@ -10,11 +10,17 @@ h1{display:inline;font-weight:700;font-size:28px;color:#fff}
 #login{padding:10px 60px 0;}
 input.txt{width:170px}
 .msg{height:30px;line-height:30px;color:#e00;font-size:12px}
-.item{padding:.6em 0}
+.item{padding:8px 0}
 .item-control{padding-left:4em}
 .btn{display: inline-block;padding:2px 27px;margin-bottom:0;font-size:14px;font-weight:400;line-height:1.42857143;text-align:center;white-space:nowrap;vertical-align:middle;-ms-touch-action: manipulation;touch-action: manipulation;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;background-image:none;border:1px solid #e0e0e0;border-radius:0;background-color:#f2f2f2}
 .btn:hover{background-color:#f7f7f7}
 .btn-primary{color:#fff;background-color:#006f68;border-color:#2e6da4}
 .btn-primary:hover{background-color:#228f8f}
-label{width:4em;display:inline-block;text-align:right}
+label{width:4em;display:inline-block;text-align:right;
+    padding-bottom:8px;}
 #foot{color:#fff;padding-top:20px;text-align:center;font-size:13px}
+table{border-collapse: collapse; margin: 0 auto;text-align: center;}
+table td, table th{border: 1px solid #cad9ea;color: #666;height: 30px;}
+table thead th{background-color: #CCE8EB;width: 100px;}
+table tr:nth-child(odd){background: #fff;}
+table tr:nth-child(even){background: #F5FAFA;}

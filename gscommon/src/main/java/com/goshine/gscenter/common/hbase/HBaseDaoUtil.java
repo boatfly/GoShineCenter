@@ -2,18 +2,18 @@ package com.goshine.gscenter.common.hbase;
 
 import com.goshine.gscenter.common.hbase.annotations.HbaseColumn;
 import com.goshine.gscenter.common.hbase.annotations.HbaseTable;
+import com.goshine.gscenter.gskit.collection.ListUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
-import org.apache.hadoop.hbase.filter.CompareFilter;
-import org.apache.hadoop.hbase.filter.Filter;
-import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
+import org.apache.hadoop.hbase.client.coprocessor.AggregationClient;
+import org.apache.hadoop.hbase.client.coprocessor.LongColumnInterpreter;
+import org.apache.hadoop.hbase.filter.*;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import scala.Int;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -368,6 +368,153 @@ public class HBaseDaoUtil {
             return resultList;
         }
     }
+
+    public <T> HBasePageBean<T> queryPageScanGreater(HBasePageBean<T> thBasePageBean,T obj, Map<String, String> param)throws Exception{
+
+//        if(thBasePageBean.getList()==null||thBasePageBean.getList().size()==0){
+//            //获取总记录数
+//            thBasePageBean.setTotalCount(116L);
+//        }
+
+        List<T> objs = new ArrayList<T>();
+        String tableName = getORMTable(obj);
+        if (StringUtils.isBlank(tableName)) {
+            return null;
+        }
+        try (Table table = HconnectionFactory.connection.getTable(TableName.valueOf(tableName));Admin admin = HconnectionFactory.connection.getAdmin();){
+            if(!admin.isTableAvailable(TableName.valueOf(tableName))){
+                thBasePageBean.setList(objs);
+                return thBasePageBean;
+            }
+            Scan scan = new Scan();
+
+            FilterList filterList = new FilterList(
+                    FilterList.Operator.MUST_PASS_ALL);
+            Filter pageFilter = new PageFilter(thBasePageBean.getPageSize()+1);
+            if(!StringUtils.isEmpty(thBasePageBean.getNextPageRow())) {
+                Filter rowFilter1 = new RowFilter(CompareFilter.CompareOp.GREATER_OR_EQUAL,
+                        new BinaryComparator(Bytes.toBytes(thBasePageBean.getNextPageRow())));
+                filterList.addFilter(rowFilter1);
+            }
+
+            filterList.addFilter(pageFilter);
+
+            scan.setFilter(filterList);
+
+            if(param!=null)
+                for (Map.Entry<String, String> entry : param.entrySet()){
+                    Class<?> clazz = obj.getClass();
+                    Field[] fields = clazz.getDeclaredFields();
+                    for (Field field : fields) {
+                        if (!field.isAnnotationPresent(HbaseColumn.class)) {
+                            continue;
+                        }
+                        field.setAccessible(true);
+                        HbaseColumn orm = field.getAnnotation(HbaseColumn.class);
+                        String family = orm.family();
+                        String qualifier = orm.qualifier();
+                        if(qualifier.equals(entry.getKey())){
+                            Filter filter = new SingleColumnValueFilter(Bytes.toBytes(family), Bytes.toBytes(entry.getKey()), CompareFilter.CompareOp.GREATER_OR_EQUAL, Bytes.toBytes(entry.getValue()));
+                            scan.setFilter(filter);
+                        }
+                    }
+                }
+
+            if(ListUtil.isEmpty(thBasePageBean.getList()))
+                thBasePageBean = getPages(thBasePageBean,obj,param,tableName,table);
+
+            ResultScanner scanner = table.getScanner(scan);
+            int i=0;
+            String firstRow = null;
+            for (Result result : scanner) {
+                i++;
+                if(thBasePageBean.getCurrPage()==1&&i==1){
+                    firstRow = Bytes.toString(result.getRow());
+                }
+                if(i==(thBasePageBean.getPageSize()+1)){
+                    thBasePageBean.setPrePageRow(thBasePageBean.getCurPageRow());
+                    thBasePageBean.setCurPageRow(thBasePageBean.getNextPageRow());
+                    thBasePageBean.setNextPageRow(Bytes.toString(result.getRow()));
+                }else{
+                    T beanClone = (T)BeanUtils.cloneBean(HBaseBeanUtil.resultToBean(result, obj));
+                    objs.add(beanClone);
+                }
+            }
+            if(firstRow!=null){
+                thBasePageBean.setPrePageRow(firstRow);
+                thBasePageBean.setCurPageRow(firstRow);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("查询失败！");
+            throw new Exception(e);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+            logger.error("查询失败！");
+            throwable.printStackTrace();
+        }
+
+        thBasePageBean.setList(objs);
+
+        return thBasePageBean;
+    }
+
+    private <T> HBasePageBean<T> getPages(HBasePageBean<T> thBasePageBean,T obj, Map<String, String> param,String tableName,Table table){
+        if(ListUtil.isEmpty(thBasePageBean.getList())){
+            enableAggregation(tableName);
+
+            Scan scan = new Scan();
+            FilterList filterList = new FilterList(
+                    FilterList.Operator.MUST_PASS_ALL);
+            if(!StringUtils.isEmpty(thBasePageBean.getCurPageRow())) {
+                Filter rowFilter1 = new RowFilter(CompareFilter.CompareOp.GREATER_OR_EQUAL,
+                        new BinaryComparator(Bytes.toBytes(thBasePageBean.getCurPageRow())));
+                filterList.addFilter(rowFilter1);
+            }
+
+            scan.setFilter(filterList);
+
+            AggregationClient aggregation = new AggregationClient(HconnectionFactory.connection.getConfiguration());
+            Long count = null;
+            try {
+                count = aggregation.rowCount(table,
+                        new LongColumnInterpreter(), scan);
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
+            thBasePageBean.setTotalCount(count);
+            thBasePageBean.setTotalPage((count % thBasePageBean.getPageSize() == 0) ? count/thBasePageBean.getPageSize(): (count/thBasePageBean.getPageSize()) + 1);
+        }
+        return  thBasePageBean;
+    }
+
+    private void enableAggregation(String tableName) {
+        String coprocessorName = "org.apache.hadoop.hbase.coprocessor.AggregateImplementation";
+        try {
+            HBaseAdmin admin = new HBaseAdmin(HconnectionFactory.connection.getConfiguration());
+            HTableDescriptor htd = admin.getTableDescriptor(Bytes.toBytes(tableName));
+            List<String> coprocessors = htd.getCoprocessors();
+            if (coprocessors != null && coprocessors.size() > 0) {
+                return;
+            } else {
+                admin.disableTable(tableName);
+                htd.addCoprocessor(coprocessorName);
+                admin.modifyTable(tableName, htd);
+                admin.enableTable(tableName);
+            }
+        } catch (TableNotFoundException e) {
+            logger.error(e.getMessage());
+        } catch (MasterNotRunningException e) {
+            logger.error(e.getMessage());
+        } catch (ZooKeeperConnectionException e) {
+            logger.error(e.getMessage());
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+
 
     /**
      * @Descripton: 根据条件过滤查询（大于等于）

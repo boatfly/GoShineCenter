@@ -1,5 +1,7 @@
 package com.goshine.gscenter.common.hbase.instance.service;
 
+import com.goshine.gscenter.common.hbase.HBaseDaoUtil;
+import com.goshine.gscenter.common.hbase.HBasePageBean;
 import com.goshine.gscenter.common.hbase.instance.dao.HMessageDao;
 import com.goshine.gscenter.common.hbase.instance.entity.HMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,9 @@ import java.util.Map;
 public class HMessageService {
     @Autowired
     private HMessageDao hMessageDao;
+
+    @Autowired
+    private HBaseDaoUtil hBaseDaoUtil;
 
     /**
      * @param hMessage
@@ -32,12 +37,13 @@ public class HMessageService {
      * @param hMessage
      * @param rowkey
      */
-    @Transactional
     public List<HMessage> getById(HMessage hMessage, String rowkey) {
         return hMessageDao.getById(hMessage, rowkey);
     }
 
-    public List<HMessage> queryScanGreater(HMessage hMessage,Map<String, String> param) throws Exception {
-        return hMessageDao.queryScanGreater(hMessage,param);
+    public HBasePageBean queryScanGreater(HBasePageBean<HMessage> hBasePageBean,HMessage hMessage,Integer page,Integer pagesize,String startRowKey, Map<String, String> param) throws Exception {
+        //hBasePageBean.setList(hMessageDao.queryScanGreater(hMessage,param));
+        hBasePageBean = hMessageDao.queryPageScanGreater(hBasePageBean,hMessage,param);
+        return hBasePageBean;
     }
 }

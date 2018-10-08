@@ -3,6 +3,9 @@ package com.goshine.gscenter.common.hbase.instance.entity;
 import com.goshine.gscenter.common.hbase.annotations.HbaseColumn;
 import com.goshine.gscenter.common.hbase.annotations.HbaseTable;
 
+/**
+ * 客户服务
+ */
 @HbaseTable(tableName="t_hmessage")
 public class HMessage {
     @HbaseColumn(family="rowkey", qualifier="rowkey")
@@ -13,6 +16,8 @@ public class HMessage {
 
     @HbaseColumn(family="demo", qualifier="sendTime")
     private String sendTime;
+
+    private String ssdw;
 
     public String getId() {
         return id;

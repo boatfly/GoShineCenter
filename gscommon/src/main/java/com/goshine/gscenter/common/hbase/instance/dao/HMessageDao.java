@@ -1,6 +1,7 @@
 package com.goshine.gscenter.common.hbase.instance.dao;
 
 import com.goshine.gscenter.common.hbase.HBaseDaoUtil;
+import com.goshine.gscenter.common.hbase.HBasePageBean;
 import com.goshine.gscenter.common.hbase.instance.entity.HMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,5 +39,9 @@ public class HMessageDao {
 
     public List<HMessage> queryScanGreater(HMessage hMessage,Map<String, String> param) throws Exception {
         return hBaseDaoUtil.queryScanGreater(hMessage,param);
+    }
+
+    public HBasePageBean queryPageScanGreater(HBasePageBean<HMessage> hBasePageBean,HMessage hMessage, Map<String, String> param) throws Exception {
+        return hBaseDaoUtil.queryPageScanGreater(hBasePageBean,hMessage,param);
     }
 }
